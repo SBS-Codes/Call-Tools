@@ -1,4 +1,3 @@
-import json
 import ollama
 
 # 1. Define your custom tool function
@@ -77,35 +76,21 @@ def run_conversation():
         tools=my_tools,  # Inform the model about your tool
     )
 
-    # Append the model's response to the conversation history
-    messages.append(response['message'])
-
     # 4. Check if the model decided to call a tool
     if response['message'].get('tool_calls'):
         for tool_call in response['message']['tool_calls']:
             tool_name = tool_call['function']['name']
             arguments = tool_call['function']['arguments']
-            
-            if tool_name in available_tools:
-                # Execute the actual Python tool function with the model's generated inputs
-                tool_output = available_tools[tool_name](**arguments)
-                
-                # 5. Send the tool results back to the model
-                messages.append({
-                    'role': 'tool',
-                    'name': tool_name,
-                    'content': json.dumps({'result': tool_output}),
-                })
-                
-                # Second LLM Call: Model reads the tool output and drafts the final answer
-                final_response = ollama.chat(
-                    model='llama:latest',
-                    messages=messages
-                )
-                print(f"\nLlama Final Answer:\n{final_response['message']['content']}")
+
+            if tool_name not in available_tools:
+                raise ValueError(f"Model requested an unknown tool: {tool_name}")
+
+            # Execute the requested Python function and display its result.
+            tool_output = available_tools[tool_name](**arguments)
+            print(f"[Tool Result] {tool_output}")
     else:
-        # Fallback if the model didn't think it needed a tool
-        print(f"\nLlama Final Answer:\n{response['message']['content']}")
+        # The model can answer directly without requesting a tool.
+        print(f"\nLlama Direct Answer:\n{response['message']['content']}")
 
 if __name__ == "__main__":
     run_conversation()
