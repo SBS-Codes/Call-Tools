@@ -7,7 +7,7 @@ The project currently provides two tools:
 - `calculate_hypotenuse(a, b)`: calculates the hypotenuse of a right-angled triangle.
 - `calculate_product(a, b)`: multiplies two numbers.
 
-**Note** - I'm running a local **llama3.2-local:latest** model renamed it to **llama:latest**
+**Note** - I'm running a local **llama3.2-local:latest** model and I have renamed it to **llama:latest**.
 
 ## How it works
 
